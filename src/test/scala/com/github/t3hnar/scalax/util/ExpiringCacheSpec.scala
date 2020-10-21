@@ -44,6 +44,37 @@ class ExpiringCacheSpec extends Specification {
       cache.map.size must eventually(beEqualTo(1))
     }
 
+    "remove a value from cache by key" in new ExpiringCacheScope {
+      cache.map must haveSize(0)
+      cache.queryCount mustEqual 0
+
+      cache.put(0, "0")
+      cache.put(1, "1")
+      cache.get(0) must beSome("0")
+      cache.get(1) must beSome("1")
+      cache.map.size must eventually(beEqualTo(2))
+
+      cache.remove(1)
+
+      cache.map.size must eventually(beEqualTo(1))
+      cache.get(0) must beSome("0")
+      cache.get(1) must beNone
+    }
+
+    "update an existing key in cache" in new ExpiringCacheScope {
+      cache.map must haveSize(0)
+      cache.queryCount mustEqual 0
+
+      cache.put(1, "1")
+      cache.get(1) must beSome("1")
+      cache.map.size must eventually(beEqualTo(1))
+
+      cache.put(1, "2")
+
+      cache.get(1) must beSome("2")
+      cache.map.size must eventually(beEqualTo(1))
+    }
+
   }
 
   class ExpiringCacheScope extends Scope {
@@ -53,4 +84,3 @@ class ExpiringCacheSpec extends Specification {
     }
   }
 }
-
